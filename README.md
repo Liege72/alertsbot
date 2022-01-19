@@ -60,3 +60,6 @@ A: No, but if you do not, you will have to implement your own database handler/s
 
 **Q: I used the `send` command but I am not seeing any alerts being sent.**<br />
 A: Make sure you have used the `enable` command to enable alerts on the server. 
+
+**Q: Why can't I use the `setup` or `mentionrole` commands for a server?**
+A: Only users with administrator permissions are allowed to use these commands. 
