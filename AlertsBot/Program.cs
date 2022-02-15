@@ -3,30 +3,36 @@ using Discord.WebSocket;
 using Discord.Commands;
 using AlertsBot.Services;
 using NextMessageAsync;
+using AlertsBot.Handlers;
+using Discord.Interactions;
 
 namespace AlertsBot
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
-        public static DiscordSocketClient Client;
+        public static DiscordSocketClient client;
+        public static InteractionService service;
         public async Task MainAsync()
         {
-            Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Verbose, MessageCacheSize = 10 });
-            var service = new CommandService();
-            var messageService = new MessageService(Client);
-            var handler = new CommandHandler(service, Client);
+            client = new DiscordSocketClient(new DiscordSocketConfig 
+            { 
+                LogLevel = LogSeverity.Info,
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages
+            });
+            var service = new InteractionService(client);
+            var handler = new SlashCommandHandler(client, service);
 
-            Client.Log += LogAsync;
+            client.Log += LogAsync;
             service.Log += LogAsync;
 
-            await Client.LoginAsync(TokenType.Bot, ConfigService.Config.BotToken);
-            await Client.StartAsync();
+            await client.LoginAsync(TokenType.Bot, ConfigService.Config.BotToken);
+            await client.StartAsync();
 
             if (ConfigService.Config.CustomStatus != null)
-                await Client.SetGameAsync(ConfigService.Config.CustomStatus);
+                await client.SetGameAsync(ConfigService.Config.CustomStatus);
 
             await Task.Delay(Timeout.Infinite);
         }

@@ -1,10 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlertsBot.Services
 {
@@ -15,9 +9,11 @@ namespace AlertsBot.Services
         public string MongoCS { get; set; }
 
         public string DatabaseName { get; set; }
+
         public string CollectionName { get; set; }
-        public string Prefix { get; set; }
+
         public string CustomStatus { get; set; }
+
         public ulong AdminUser { get; set; }
 
     }

@@ -1,0 +1,9 @@
+﻿{
+  "BotToken": "NzM4MTY0MjQ3MDI4MzAxODU0.XyH7Bg.McQLfF9r9xH1suqB1y3r2vO3OCc",
+  "MongoCS": "mongodb://liege:Hillside808@68.183.30.85:27017",
+  "DatabaseName": "AlertsBot",
+  "CollectionName": "testing",
+  "Prefix": "!",
+  "CustomStatus": "testing",
+  "AdminUser": 619241308912877609
+}

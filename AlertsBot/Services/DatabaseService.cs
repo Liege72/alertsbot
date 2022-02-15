@@ -11,7 +11,7 @@ namespace AlertsBot.Services
         static IMongoDatabase Database
             => Client.GetDatabase(ConfigService.Config.DatabaseName);
 
-        static IMongoCollection<ServerSettings> Settings
+        public static IMongoCollection<ServerSettings> Settings
                 => Database.GetCollection<ServerSettings>(ConfigService.Config.CollectionName);
 
         [BsonIgnoreExtraElements]
@@ -21,20 +21,17 @@ namespace AlertsBot.Services
             public ulong RoleID { get; set; }
             public ulong UserID { get; set; }
             public ulong ChannelID { get; set; }
-            public bool Status { get; set; } = false;      
+            public bool Status { get; set; } = false;
+            public string Color { get; set; } = "ffff00";
 
             public static ServerSettings GetServerSettings(ulong guildid)
             {
                 var result = Settings.Find(x => x.GuildID == guildid);
 
                 if (result.Any())
-                {
                     return result.First();
-                }
                 else
-                {
                     return null;
-                }
             }
 
             public ServerSettings(ulong guildid)
@@ -48,18 +45,12 @@ namespace AlertsBot.Services
                 var settings = GetServerSettings(guildid);
 
                 if (settings == null)
-                {
                     return new ServerSettings(guildid);
-                }
                 else
-                {
                     return settings;
-                }
             }
             public void SaveThis()
-            {
-                Settings.ReplaceOne(x => x.GuildID == this.GuildID, this, new ReplaceOptions() { IsUpsert = true });
-            }        
+                => Settings.ReplaceOne(x => x.GuildID == this.GuildID, this, new ReplaceOptions() { IsUpsert = true });
         }
     }
 }
