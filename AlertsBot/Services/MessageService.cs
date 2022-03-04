@@ -1,5 +1,11 @@
-﻿using Discord.Commands;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
+using System.Linq;
 
 namespace NextMessageAsync
 {
@@ -20,6 +26,7 @@ namespace NextMessageAsync
             if (arg.Author.IsBot)
                 return;
 
+            // O(n^2) for the win
             if (Sources.Any(x => x.msg.Channel.Id == arg.Channel.Id && x.msg.Author.Id == arg.Author.Id))
             {
                 var source = Sources.FirstOrDefault(x => x.msg.Channel.Id == arg.Channel.Id && x.msg.Author.Id == arg.Author.Id);

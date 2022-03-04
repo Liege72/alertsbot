@@ -10,7 +10,6 @@ namespace AlertsBot.Handlers
     public class ModalHandler
     {
         private readonly DiscordSocketClient _client;
-        public static MongoClient Client = new MongoClient(ConfigService.Config.MongoCS);
 
         public ModalHandler(DiscordSocketClient client)
         {
@@ -21,6 +20,9 @@ namespace AlertsBot.Handlers
 
         public async Task ModalSubmitted(SocketModal arg)
         {
+            ConfigService.LoadConfig();
+            MongoClient Client = new MongoClient(ConfigService.Config.MongoCS);
+
             var id = arg.Data.CustomId;
             var comps = arg.Data.Components;
 

@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Discord.Commands;
 using AlertsBot.Services;
-using NextMessageAsync;
 using AlertsBot.Handlers;
 using Discord.Interactions;
+using Discord.Commands;
+using NextMessageAsync;
 
 namespace AlertsBot
 {
@@ -14,19 +14,25 @@ namespace AlertsBot
             => new Program().MainAsync().GetAwaiter().GetResult();
 
         public static DiscordSocketClient client;
-        public static InteractionService service;
+        public static InteractionService interactions;
+        public static CommandService commands;
         public async Task MainAsync()
         {
+            ConfigService.LoadConfig();
+
             client = new DiscordSocketClient(new DiscordSocketConfig 
             { 
                 LogLevel = LogSeverity.Info,
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages
             });
-            var service = new InteractionService(client);
-            var handler = new SlashCommandHandler(client, service);
+            interactions = new InteractionService(client);
+            commands = new CommandService();
+            var handler = new AllCommandHandler(client, interactions, commands);
+            var messageService = new MessageService(client);
 
             client.Log += LogAsync;
-            service.Log += LogAsync;
+            interactions.Log += LogAsync;
+            commands.Log += LogAsync;
 
             await client.LoginAsync(TokenType.Bot, ConfigService.Config.BotToken);
             await client.StartAsync();

@@ -16,6 +16,10 @@ namespace AlertsBot.Services
 
         public ulong AdminUser { get; set; }
 
+        public string Prefix { get; set; }
+
+        public bool slashEnabled { get; set; }
+
     }
 
     public class ConfigService

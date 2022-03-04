@@ -12,6 +12,7 @@ namespace AlertsBot.Modules
         [SlashCommand("setup", "Use this command to setup alerts in the provided channel.")]
         public async Task SetupAsync([Summary(description: "The channel you want alerts to be sent to")] SocketTextChannel channel)
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
             var user = Context.User as SocketGuildUser;
             var guild = Context.Guild.Id;
@@ -32,6 +33,7 @@ namespace AlertsBot.Modules
         [SlashCommand("mentionrole", "The provided role will be mentioned for all future alerts.")]
         public async Task MentionRoleAsync([Summary(description: "The role you want to be mentioned for alerts")] SocketRole role)
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
             var user = Context.User as SocketGuildUser;
             var guild = Context.Guild.Id;
@@ -48,6 +50,7 @@ namespace AlertsBot.Modules
         [SlashCommand("color", "Sets the provided color for alerts for the provided guild.")]
         public async Task SetColorAsync([Summary(description: "The id of the guild you want to change alert color for")] ulong guildid, [Summary(description: "The color you want alerts to be for the provided guild")] string hex)
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
@@ -83,6 +86,7 @@ namespace AlertsBot.Modules
         [SlashCommand("enable", "Enables alerts on the provided guild.")]
         public async Task EnableAlertsAsync([Summary(description: "The id for the guild you want to enable alerts on")] ulong guildid)
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
@@ -100,6 +104,7 @@ namespace AlertsBot.Modules
         [SlashCommand("disable", "Disable alerts on the provided guild.")]
         public async Task DisableAlertsAsync([Summary(description: "The id for the guild you want to disable alerts on")] ulong guildid)
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
@@ -117,6 +122,7 @@ namespace AlertsBot.Modules
         [SlashCommand("send", "Sends an alert to all enabled guilds.")]
         public async Task SendAlertAsync()
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
@@ -135,6 +141,7 @@ namespace AlertsBot.Modules
         [SlashCommand("servers", "Lists the servers that the bot is on.")]
         public async Task ListServersAsync()
         {
+            ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
@@ -154,6 +161,7 @@ namespace AlertsBot.Modules
                 else
                     embed.WithDescription(string.Join("\n", guildsWithIds.Take(count)));
                 embed.WithColor(Color.Blue);
+                await interaction.RespondAsync("List is below");
                 await Context.Channel.SendMessageAsync("", false, embed.Build());
                 count -= 25;
             }

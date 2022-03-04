@@ -4,18 +4,25 @@ using System.Threading.Tasks;
 using Discord.Interactions;
 using Discord.WebSocket;
 using System;
+using Discord.Commands;
+using AlertsBot.Services;
 
 namespace AlertsBot.Handlers
 {
-    public class SlashCommandHandler
+    public class AllCommandHandler
     {
         private readonly InteractionService _interactions;
         private readonly DiscordSocketClient _client;
+        private readonly CommandService _commands;
 
-        public SlashCommandHandler(DiscordSocketClient client, InteractionService interaction)
+        public AllCommandHandler(DiscordSocketClient client, InteractionService interaction, CommandService commands)
         {
             _client = client;
             _interactions = interaction;
+            _commands = commands;
+
+            _client.MessageReceived += MessageReceivedAsync;
+            _commands.CommandExecuted += CommandExecutedAsync;
 
             _interactions.SlashCommandExecuted += SlashCommandExecuted;
             _client.InteractionCreated += InteractionCreated;
@@ -23,11 +30,66 @@ namespace AlertsBot.Handlers
             _client.Ready += OnReady;
 
             _interactions.AddModulesAsync(Assembly.GetExecutingAssembly(), null);
+            _commands.AddModulesAsync(Assembly.GetExecutingAssembly(), null);
+        }
+
+        public async Task MessageReceivedAsync(SocketMessage rawMessage)
+        {
+            if (!(rawMessage is SocketUserMessage message))
+            {
+                return;
+            }
+
+            if (message.Source != MessageSource.User)
+            {
+                return;
+            }
+
+            ConfigService.LoadConfig();
+
+            var argPos = 0;
+            string prefix = ConfigService.Config.Prefix;
+
+            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
+            {
+                return;
+            }
+
+            var context = new SocketCommandContext(_client, message);
+            await _commands.ExecuteAsync(context, argPos, null, MultiMatchHandling.Best);
+        }
+
+        public async Task CommandExecutedAsync(Discord.Optional<CommandInfo> command, ICommandContext context, Discord.Commands.IResult result)
+        {
+            if (!command.IsSpecified)
+            {
+                Console.WriteLine("Unknown Command Was Used");
+                return;
+            }
+
+            if (result.IsSuccess)
+            {
+                Console.WriteLine($"Type: [Text] Command: [{command.Value.Name}] User: [{context.User.Username}] Result: [{result}] Time: [{context.Message.CreatedAt.UtcDateTime.AddHours(-4)}] Latency: [{_client.Latency}]");
+            }
+            else
+            {
+                var embed = new EmbedBuilder();
+                embed.WithAuthor("Command Error", "https://cdn.discordapp.com/emojis/312314733816709120.png?v=1");
+                embed.WithDescription("Hey there! Looks like there was an error, check if you used the command correctly.");
+                embed.WithColor(Color.Red);
+                await context.Channel.SendMessageAsync("", false, embed.Build());
+
+                Console.WriteLine($"Type: [Text] Command: [{command.Value.Name}] User: [{context.User.Username}] Result: [{result}] Time: [{context.Message.CreatedAt.UtcDateTime.AddHours(-4)}] Latency: [{_client.Latency}]");
+            }
         }
 
         public async Task OnReady()
         {
-            await _interactions.RegisterCommandsGloballyAsync();
+            ConfigService.LoadConfig();
+            if (ConfigService.Config.slashEnabled)
+                await _interactions.RegisterCommandsGloballyAsync();
+            else
+                return;
         }
 
         public async Task SlashCommandExecuted(SlashCommandInfo command, IInteractionContext context, Discord.Interactions.IResult result)
