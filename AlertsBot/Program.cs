@@ -13,21 +13,20 @@ namespace AlertsBot
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
-        public static DiscordSocketClient client;
-        public static InteractionService interactions;
-        public static CommandService commands;
         public async Task MainAsync()
         {
             ConfigService.LoadConfig();
 
-            client = new DiscordSocketClient(new DiscordSocketConfig 
+            var client = new DiscordSocketClient(new DiscordSocketConfig 
             { 
                 LogLevel = LogSeverity.Info,
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.GuildMembers
             });
-            interactions = new InteractionService(client);
-            commands = new CommandService();
+            var interactions = new InteractionService(client);
+            var commands = new CommandService();
+
             var handler = new AllCommandHandler(client, interactions, commands);
+            var modalHandler = new ModalHandler(client);
             var messageService = new MessageService(client);
 
             client.Log += LogAsync;

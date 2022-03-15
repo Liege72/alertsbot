@@ -131,9 +131,11 @@ namespace AlertsBot.Modules
             {
                 var modal = new ModalBuilder();
                 modal.WithTitle("New Alert");
-                modal.AddTextInput("What do you want the alert to say?", "alert_content", TextInputStyle.Paragraph, "Alert Content", 1, 2000, true);
-                modal.AddTextInput("What would you like the footer to say?", "footer_content", TextInputStyle.Short, "Footer", null, null, true);
                 modal.WithCustomId("alert");
+                modal.AddTextInput("What should the alert title be?", "alert_title", TextInputStyle.Short, "Alert Title", 1, 120, true);
+                modal.AddTextInput("What do you want the alert to say?", "alert_content", TextInputStyle.Paragraph, "Alert Content", 1, 2000, true);
+                modal.AddTextInput("What would you like the image to be?", "alert_image", TextInputStyle.Short, "Image URL", required: false);
+                modal.AddTextInput("What would you like the footer to say?", "alert_footer", TextInputStyle.Short, "Footer", 1, 80, false);
                 await interaction.RespondWithModalAsync(modal.Build());
             }
         }

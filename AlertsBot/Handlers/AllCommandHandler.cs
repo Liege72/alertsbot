@@ -11,9 +11,9 @@ namespace AlertsBot.Handlers
 {
     public class AllCommandHandler
     {
-        private readonly InteractionService _interactions;
-        private readonly DiscordSocketClient _client;
-        private readonly CommandService _commands;
+        public readonly InteractionService _interactions;
+        public static DiscordSocketClient _client;
+        public readonly CommandService _commands;
 
         public AllCommandHandler(DiscordSocketClient client, InteractionService interaction, CommandService commands)
         {
@@ -30,7 +30,7 @@ namespace AlertsBot.Handlers
             _client.Ready += OnReady;
 
             _interactions.AddModulesAsync(Assembly.GetExecutingAssembly(), null);
-            _commands.AddModulesAsync(Assembly.GetExecutingAssembly(), null);
+            _commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
         }
 
         public async Task MessageReceivedAsync(SocketMessage rawMessage)
@@ -48,9 +48,9 @@ namespace AlertsBot.Handlers
             ConfigService.LoadConfig();
 
             var argPos = 0;
-            string prefix = ConfigService.Config.Prefix;
+            char prefix = ConfigService.Config.Prefix;
 
-            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
+            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasCharPrefix(prefix, ref argPos)))
             {
                 return;
             }
