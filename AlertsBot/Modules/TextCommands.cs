@@ -67,7 +67,7 @@ namespace AlertsBot.Modules
         }
 
         [Command("enable")]
-        public async Task EnableAlerts(ulong guildid)
+        public async Task EnableAlerts(string guildid)
         {
             var user = Context.User as SocketGuildUser;
 
@@ -77,20 +77,18 @@ namespace AlertsBot.Modules
                 return;
             }
 
-            if (guildid.ToString() == null)
-            {
-                await ReplyAsync($"🔴 **Error:** Please provide a guild id!", messageReference: new MessageReference(Context.Message.Id, Context.Message.Channel.Id, user.Guild.Id));
-                return;
-            }
+            ulong id = 99;
+            try { id = Convert.ToUInt64(guildid); Context.Client.GetGuild(id); }
+            catch { await ReplyAsync($"🔴 **Error:** Please provide a guild id!", messageReference: new MessageReference(Context.Message.Id, Context.Message.Channel.Id, user.Guild.Id)); return; }
 
-            var settings = ServerSettings.GetServerSettings(guildid);
+            var settings = ServerSettings.GetServerSettings(id);
             settings.Status = true;
             settings.SaveThis();
             await Context.Channel.SendMessageAsync($"🟢 **Success:** Alerts will now be sent on the guild with id: `{guildid}`!");
         }
 
         [Command("disable")]
-        public async Task DisableAlerts(ulong guildid)
+        public async Task DisableAlerts(string guildid)
         {
             var user = Context.User as SocketGuildUser;
 
@@ -100,13 +98,11 @@ namespace AlertsBot.Modules
                 return;
             }
 
-            if (guildid.ToString() == null)
-            {
-                await ReplyAsync($"🔴 **Error:** Please provide a guild id!", messageReference: new MessageReference(Context.Message.Id, Context.Message.Channel.Id, user.Guild.Id));
-                return;
-            }
+            ulong id = 99;
+            try { id = Convert.ToUInt64(guildid); Context.Client.GetGuild(id); }
+            catch { await ReplyAsync($"🔴 **Error:** Please provide a guild id!", messageReference: new MessageReference(Context.Message.Id, Context.Message.Channel.Id, user.Guild.Id)); return; }
 
-            var settings = ServerSettings.GetServerSettings(guildid);
+            var settings = ServerSettings.GetServerSettings(id);
             settings.Status = false;
             settings.SaveThis();
             await Context.Channel.SendMessageAsync($"🟢 **Success:** Alerts will no longer be sent on the guild with id: `{guildid}`!");
@@ -141,7 +137,7 @@ namespace AlertsBot.Modules
                 var desc = await Context.NextMessageAsync();
 
                 await Context.Channel.SendMessageAsync("Would you like to include an image? `yes/no`");
-                bool withImage;
+                bool withImage = false;
                 var imageConfirm = await Context.NextMessageAsync();
 
                 if (imageConfirm.ToString().ToLower() == "yes")
@@ -162,18 +158,17 @@ namespace AlertsBot.Modules
 
                 if (withImage)
                 {
-                    string imageUrl;
                     var image = await Context.NextMessageAsync();
-                    if (image.Content == null)
-                    {
-                        imageUrl = image.Attachments.First().ProxyUrl;
-                    }
-                    else
-                    {
-                        imageUrl = image.Content;
-                    }
+                    string imageUrl = "";
 
+                    if (image.Content == null)
+                        imageUrl = image.Attachments.First().ProxyUrl;
+                    else
+                        imageUrl = image.Content;
+
+                    await ReplyAsync("Great! Would you like to send this alert? `yes/no`");
                     var confirmSend = await Context.NextMessageAsync();
+
                     if (confirmSend.ToString().ToLower() == "yes")
                     {
                         await (Context.Channel as SocketTextChannel).SendAlertAsync(title.ToString(), desc.ToString(), imageUrl);
@@ -200,7 +195,7 @@ namespace AlertsBot.Modules
                     }
                 }
             });
-            return Task.CompletedTask;           
+            return Task.CompletedTask;
         }
     }
 }

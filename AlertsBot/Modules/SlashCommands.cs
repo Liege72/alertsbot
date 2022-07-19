@@ -18,7 +18,10 @@ namespace AlertsBot.Modules
             var guild = Context.Guild.Id;
 
             if (!user.GuildPermissions.Administrator && user.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
             var settings = ServerSettings.GetOrCreateServerSettings(guild);
             settings.ChannelID = channel.Id;
@@ -39,7 +42,10 @@ namespace AlertsBot.Modules
             var guild = Context.Guild.Id;
 
             if (!user.GuildPermissions.Administrator && user.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
             var settings = ServerSettings.GetServerSettings(guild);
             settings.RoleID = role.Id;
@@ -48,19 +54,23 @@ namespace AlertsBot.Modules
         }
 
         [SlashCommand("color", "Sets the provided color for alerts for the provided guild.")]
-        public async Task SetColorAsync([Summary(description: "The id of the guild you want to change alert color for")] ulong guildid, [Summary(description: "The color you want alerts to be for the provided guild")] string hex)
+        public async Task SetColorAsync([Summary(description: "The id of the guild you want to change alert color for")] string guildid, [Summary(description: "The color you want alerts to be for the provided guild")] string hex)
         {
             ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
-            if (guildid.ToString() == null)
-                await interaction.RespondAsync($"🔴 **Error:** Please provide a guild id!", ephemeral: true);
+            ulong id = 99;
+            try { id = Convert.ToUInt64(guildid); Context.Client.GetGuild(id); }
+            catch { await interaction.RespondAsync($"🔴 **Error:** Please provide a valid guild id!", ephemeral: true); return; }
 
             if (hex.Contains("#"))
-                hex.Replace("#", "");
+                hex = hex.Replace("#", "");
 
             Color color = new Color(255, 255, 0);
 
@@ -76,44 +86,52 @@ namespace AlertsBot.Modules
             }
             catch { await interaction.RespondAsync($"🔴 **Error:** Please provide the valid hex value!", ephemeral: true); }
 
-            var settings = ServerSettings.GetServerSettings(guildid);
-            settings.Color = color.ToString();
+            var settings = ServerSettings.GetServerSettings(id);
+            settings.Color = color.ToString().Substring(1);
             settings.Status = true;
             settings.SaveThis();
             await interaction.RespondAsync($"🟢 **Success:** Alerts will now be sent on the guild with id: `{guildid}` with the color: `{hex}`!");
         }
 
         [SlashCommand("enable", "Enables alerts on the provided guild.")]
-        public async Task EnableAlertsAsync([Summary(description: "The id for the guild you want to enable alerts on")] ulong guildid)
+        public async Task EnableAlertsAsync([Summary(description: "The id for the guild you want to enable alerts on")] string guildid)
         {
             ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
-            try { var guild = Context.Client.GetGuild(guildid); }
-            catch { await interaction.RespondAsync($"🔴 **Error:** Please provide a valid guild id!", ephemeral: true); }
+            ulong id = 99;
+            try { id = Convert.ToUInt64(guildid); Context.Client.GetGuild(id); }
+            catch { await interaction.RespondAsync($"🔴 **Error:** Please provide a valid guild id!", ephemeral: true); return; }
 
-            var settings = ServerSettings.GetServerSettings(guildid);
+            var settings = ServerSettings.GetServerSettings(id);
             settings.Status = true;
             settings.SaveThis();
             await interaction.RespondAsync($"🟢 **Success:** Alerts will now be sent on the guild with id: `{guildid}`!");
         }
 
         [SlashCommand("disable", "Disable alerts on the provided guild.")]
-        public async Task DisableAlertsAsync([Summary(description: "The id for the guild you want to disable alerts on")] ulong guildid)
+        public async Task DisableAlertsAsync([Summary(description: "The id for the guild you want to disable alerts on")] string guildid)
         {
             ConfigService.LoadConfig();
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
-            try { var guild = Context.Client.GetGuild(guildid); }
-            catch { await interaction.RespondAsync($"🔴 **Error:** Please provide a valid guild id!", ephemeral: true); }
+            ulong id = 99;
+            try { id = Convert.ToUInt64(guildid); Context.Client.GetGuild(id); }
+            catch { await interaction.RespondAsync($"🔴 **Error:** Please provide a valid guild id!", ephemeral: true); return; }
 
-            var settings = ServerSettings.GetServerSettings(guildid);
+            var settings = ServerSettings.GetServerSettings(id);
             settings.Status = false;
             settings.SaveThis();
             await interaction.RespondAsync($"🟢 **Success:** Alerts will no longer be sent on the guild with id: `{guildid}`!");
@@ -126,7 +144,10 @@ namespace AlertsBot.Modules
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
             else
             {
                 var modal = new ModalBuilder();
@@ -147,7 +168,10 @@ namespace AlertsBot.Modules
             var interaction = Context.Interaction as SocketSlashCommand;
 
             if (Context.User.Id != ConfigService.Config.AdminUser)
+            {
                 await interaction.RespondAsync($"🔴 **Error:** You do not have access to use this command!", ephemeral: true);
+                return;
+            }
 
             var guilds = Context.Client.Guilds;
             var guildsWithIds = new List<string>();

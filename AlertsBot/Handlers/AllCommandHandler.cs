@@ -48,9 +48,9 @@ namespace AlertsBot.Handlers
             ConfigService.LoadConfig();
 
             var argPos = 0;
-            char prefix = ConfigService.Config.Prefix;
+            string prefix = ConfigService.Config.Prefix;
 
-            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasCharPrefix(prefix, ref argPos)))
+            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
             {
                 return;
             }
@@ -85,11 +85,11 @@ namespace AlertsBot.Handlers
 
         public async Task OnReady()
         {
-            ConfigService.LoadConfig();
-            if (ConfigService.Config.slashEnabled)
-                await _interactions.RegisterCommandsGloballyAsync();
-            else
-                return;
+            await _interactions.RegisterCommandsGloballyAsync();
+
+            //ConfigService.LoadConfig();
+            //if (ConfigService.Config.slashEnabled)
+            //    await _interactions.RegisterCommandsGloballyAsync();
         }
 
         public async Task SlashCommandExecuted(SlashCommandInfo command, IInteractionContext context, Discord.Interactions.IResult result)

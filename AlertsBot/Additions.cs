@@ -66,6 +66,7 @@ namespace Additions
                 {
                     var user = _client.GetUser(item.UserID);
                     await user.SendMessageAsync($"Hey, I wasn't able to send my latest alert. Can you make sure I have access to send messages in <#{item.ChannelID}>?");
+                    continue;
                 }
 
                 await contextChannel.SendMessageAsync($"Sent alert to {sentNum} servers!");

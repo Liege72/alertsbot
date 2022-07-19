@@ -20,7 +20,8 @@ namespace AlertsBot
             var client = new DiscordSocketClient(new DiscordSocketConfig 
             { 
                 LogLevel = LogSeverity.Info,
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.GuildMembers
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.GuildMembers,
+                MessageCacheSize = 20
             });
             var interactions = new InteractionService(client);
             var commands = new CommandService();
