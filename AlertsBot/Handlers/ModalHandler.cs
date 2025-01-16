@@ -1,25 +1,20 @@
 ﻿using AlertsBot.Services;
-using Discord;
 using Discord.WebSocket;
-using MongoDB.Driver;
-using System.Globalization;
-using static AlertsBot.Services.DatabaseService;
-using Additions;
 
 namespace AlertsBot.Handlers
 {
     public class ModalHandler
     {
-        private readonly DiscordSocketClient _client;
+        private readonly DiscordSocketClient? _client;
 
-        public ModalHandler(DiscordSocketClient client)
+        public ModalHandler(DiscordSocketClient? client)
         {
             _client = client;
 
             _client.ModalSubmitted += ModalSubmitted;
         }
 
-        public async Task ModalSubmitted(SocketModal arg)
+        private static async Task ModalSubmitted(SocketModal arg)
         {
             ConfigService.LoadConfig();
 
@@ -33,13 +28,13 @@ namespace AlertsBot.Handlers
                 string? alertImageUrl = null;
                 string? alertFooter = null;
 
-                if (comps.FirstOrDefault(x => x.CustomId == "alert_image").Value != null)
-                    alertImageUrl = comps.FirstOrDefault(x => x.CustomId == "alert_image").Value;
+                if (comps.FirstOrDefault(x => x.CustomId == "alert_image")?.Value != null)
+                    alertImageUrl = comps.FirstOrDefault(x => x.CustomId == "alert_image")?.Value;
 
-                if (comps.FirstOrDefault(x => x.CustomId == "alert_footer").Value != null)
-                    alertFooter = comps.FirstOrDefault(x => x.CustomId == "alert_footer").Value;
+                if (comps.FirstOrDefault(x => x.CustomId == "alert_footer")?.Value != null)
+                    alertFooter = comps.FirstOrDefault(x => x.CustomId == "alert_footer")?.Value;
 
-                await arg.SendAlertAsync(alertTitle, alertText, alertImageUrl, alertFooter);          
+                await arg.SendAlertAsync(alertTitle, alertText, alertImageUrl!, alertFooter!);          
             }
         }
     }

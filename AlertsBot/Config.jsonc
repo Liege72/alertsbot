@@ -1,9 +1,11 @@
 {
-  "BotToken": "",
-  "MongoCS": "",
-  "DatabaseName": "",
-  "CollectionName": "",
-  "Prefix": "",
-  "CustomStatus": null,
-  "AdminUser": 0,
+  "token": "",
+  "mongo_connection_string": "",
+  "database_name": "",
+  "collection_name": "",
+  "custom_status": null,
+  "admin_users": [
+    "0",
+    "1"
+  ]
 }

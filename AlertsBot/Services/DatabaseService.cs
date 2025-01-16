@@ -1,56 +1,58 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using AlertsBot.Services;
 
 namespace AlertsBot.Services
 {
-    public class DatabaseService
+    public abstract class DatabaseService
     {
-        static MongoClient Client = new MongoClient(ConfigService.Config.MongoCS);
+        private static readonly MongoClient Client = new MongoClient(ConfigService.Config.MongoConnectionString);
 
-        static IMongoDatabase Database
-            => Client.GetDatabase(ConfigService.Config.DatabaseName);
+        private static readonly IMongoDatabase Database = Client.GetDatabase(ConfigService.Config.DatabaseName);
 
-        public static IMongoCollection<ServerSettings> Settings
-                => Database.GetCollection<ServerSettings>(ConfigService.Config.CollectionName);
+        private static readonly IMongoCollection<ServerSettings> Settings = 
+            Database.GetCollection<ServerSettings>(ConfigService.Config.CollectionName);
 
         [BsonIgnoreExtraElements]
         public class ServerSettings
         {
-            public ulong GuildID { get; set; }
-            public ulong RoleID { get; set; }
-            public ulong UserID { get; set; }
-            public ulong ChannelID { get; set; }
+            [BsonElement("guild_id")]
+            public ulong GuildId { get; set; }
+            
+            [BsonElement("role_id")]
+            public ulong RoleId { get; set; }
+            
+            [BsonElement("user_id")]
+            public ulong UserId { get; set; }
+            
+            [BsonElement("channel_id")]
+            public ulong ChannelId { get; set; }
+            
+            [BsonElement("status")]
             public bool Status { get; set; } = false;
+            
+            [BsonElement("color")]
             public string Color { get; set; } = "ffff00";
 
-            public static ServerSettings GetServerSettings(ulong guildid)
+            public static ServerSettings? GetServerSettings(ulong guildid)
             {
-                var result = Settings.Find(x => x.GuildID == guildid);
-
-                if (result.Any())
-                    return result.First();
-                else
-                    return null;
+                var result = Settings.Find(x => x.GuildId == guildid);
+                return result.Any() ? result.First() : null;
             }
 
-            public ServerSettings(ulong guildid)
+            private ServerSettings(ulong guildid)
             {
-                this.GuildID = guildid;
+                GuildId = guildid;
                 SaveThis();
             }
 
             public static ServerSettings GetOrCreateServerSettings(ulong guildid)
             {
                 var settings = GetServerSettings(guildid);
-
-                if (settings == null)
-                    return new ServerSettings(guildid);
-                else
-                    return settings;
+                return settings ?? new ServerSettings(guildid);
             }
+            
             public void SaveThis()
-                => Settings.ReplaceOne(x => x.GuildID == this.GuildID, this, new ReplaceOptions() { IsUpsert = true });
+                => Settings.ReplaceOne(x => x.GuildId == this.GuildId, this, new ReplaceOptions() { IsUpsert = true });
         }
     }
 }
