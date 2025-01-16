@@ -1,36 +1,40 @@
+*After several years of selling this simple bot, I have decided to make the code public to contribute to the community and showcase more of my work on GitHub. Please note that this code was written several years ago and may not represent my current proficiency with C#.
+
 # AlertsBot
+This bot was originally developed for day traders who requested a custom solution and has primarily been sold to day traders and cryptocurrency enthusiasts. The bot is designed to send alerts to servers where it has been enabled. Using a simple slash command, an admin_user (see details below) can broadcast alerts to all servers where they have enabled the bot. While the bot can be added to multiple servers, it will only forward alerts to servers explicitly enabled by an admin_user.
 
 ## Preparation
 In preparation of creating this bot, you should have the following:
 - A Discord application made with the [discord developer portal](https://discord.com/developers/applications)
 - A [MongoDB](https://mongodb.com) database of your own
 - A basic understanding how how to use the discord developer portal
+- A method of hosting this bot using a server, docker, whatever the case may be for you
 ---
 ## Quick start
 
 ### Step One
-After cloning this respiratory, make sure you have the following packages installed:<br /><br />
-**Discord.Net Version 3.2.0 +** 
+After cloning this repository, make sure you have the following packages installed:<br /><br />
+**Discord.Net Version 3.17.0 +** 
 ```
-Install-Package Discord.Net -Version 3.2.0
+Install-Package Discord.Net -Version 3.17.0
 ```
-**MongoDB.Driver Version 2.14.1 +** 
+**MongoDB.Driver Version 3.1.0 +** 
 ```
-Install-Package MongoDB.Driver -Version 2.14.1
+Install-Package MongoDB.Driver -Version 3.1.0
 ```
-**MongoDB.Bson Version 2.14.1 +** 
+**MongoDB.Bson Version 3.1.0 +** 
 ```
-Install-Package MongoDB.Bson -Version 2.14.1
+Install-Package MongoDB.Bson -Version 3.1.0
 ```
 
 ### Step Two
 Open the `Config.jsonc` file and enter your custom settings.
-- **BotToken:** This is your discord applications API key.
-- **MongoCS:** This is your mongodb connection string; these usually start with `mongodb://`
-- **DatabaseName:** This will be the name of the database your collection will be stored in
-- **CollectionName:** This will be the name of the collection that the bots data will be stored in
-- **CustomStatus:** This is the custom status you want your bot to have, leave `null` if you want to keep it blank
-- **AdminUser:** This is the ID of the user that can use the send, enable and disable commands
+- `token`: This is your Discord apps API key
+- `mongo_connection_string`: This is your MongoDB connection string; it should start with `mongodb://`
+- `database_name`: This will be the name of the database your collection will be stored in
+- `collection_name`: This will be the name of the collection that the bots data will be stored in
+- `custom_status`: This is the custom status you want your bot to have, leave `null` if you want to keep it blank
+- `admin_users`: This is an array of Discord user ids for the users that you want to be able to control your bot and send alerts; ids should be strings not longs
 
 ### Step Three
 Run the `AlertsBot.exe` file to start the bot. The bot should be up and running and you can use it as you wish! See the next section to see the available commands.
